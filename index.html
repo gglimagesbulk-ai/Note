@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prediction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    body { background:#222; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;}
+    .card {
+      background: linear-gradient(135deg, #fff59d, #f4e87c);
+      padding:40px; width:85vw; max-width:500px; min-height:300px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.7); transform:rotate(-3deg); border-radius:5px;
+      font-family:'Patrick Hand', cursive; font-size:24px; line-height:1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="noteText">Loading...</div>
+
+  <script>
+    // URL of your published sheet in HTML format
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0uRjvRTbPwGV8YUnru5eUYwjUm3v_lr8ixipRmabNOHjFI4Qs47YFFtoXZ_Qk1qc61IbUt7JhjNBD/pub?output=tsv";
+
+    fetch(sheetUrl)
+      .then(res => res.text())
+      .then(data => {
+        // Parse TSV data (tab-separated)
+        const rows = data.trim().split("\n").map(row => row.split("\t"));
+        const prediction = rows[0][0]; // first cell of first row
+        document.getElementById("noteText").innerText = prediction;
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("noteText").innerText = "Failed to load data";
+      });
+  </script>
+</body>
+</html>
