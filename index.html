@@ -25,7 +25,7 @@
       .then(data => {
         // Parse TSV data (tab-separated)
         const rows = data.trim().split("\n").map(row => row.split("\t"));
-        const prediction = rows[0][0]; // first cell of first row
+        const prediction = rows[1][0]; // second row → "Waiting..."
         document.getElementById("noteText").innerText = prediction;
       })
       .catch(err => {
