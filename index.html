@@ -2,106 +2,59 @@
 <html>
 <head>
   <title>Prediction</title>
-  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: 'Patrick Hand', cursive;
-    }
 
-    .card {
-      background: linear-gradient(135deg, #fff59d, #f4e87c);
-      padding: 40px;
-      width: 85vw;
-      max-width: 500px;
-      min-height: 300px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-      transform: rotate(-3deg);
-      border-radius: 5px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .heading {
-      font-weight: bold;
-      font-size: 36px; /* larger font */
-      margin-bottom: 20px;
-    }
-
-    .value {
-      font-size: 28px; /* dynamic value font size */
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="heading">Prediction</div>
-    <div class="value" id="noteText">Loading...</div>
-  </div>
-
-  <script>
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0uRjvRTbPwGV8YUnru5eUYwjUm3v_lr8ixipRmabNOHjFI4Qs47YFFtoXZ_Qk1qc61IbUt7JhjNBD/pub?output=tsv";
-
-    fetch(sheetUrl)
-      .then(res => res.text())
-      .then(data => {
-        const rows = data.trim().split("\n").map(row => row.split("\t"));
-        const prediction = rows[rows.length - 1][0]; // always latest value
-        document.getElementById("noteText").innerText = prediction;
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById("noteText").innerText = "Failed to load data";
-      });
-  </script>
-</body>
-</html>
-
-------------------------------------------------------------------------------
-Code 2 with Pin:
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Prediction</title>
-
+  <!-- Handwriting font -->
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 
   <style>
+
     body {
       margin: 0;
       height: 100vh;
       overflow: hidden;
-      font-family: 'Patrick Hand', cursive;
-      background: #1a1a1a;
 
       display: flex;
       justify-content: center;
       align-items: center;
+
+      font-family: 'Patrick Hand', cursive;
+
+      background: #1a1a1a;
     }
 
+    /* vignette */
     body::after {
       content: "";
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.7));
+
+      background:
+        radial-gradient(
+          circle,
+          transparent 60%,
+          rgba(0,0,0,0.7)
+        );
+
+      pointer-events: none;
     }
 
     .note {
+
       position: relative;
+
       width: 90vw;
       max-width: 420px;
-      min-height: 320px;
+
+      min-height: 240px;
 
       padding: 35px;
 
-      background: linear-gradient(135deg, #ffe97a, #f4d94a);
+      background:
+        linear-gradient(
+          135deg,
+          #ffe97a,
+          #f4d94a
+        );
 
       border-radius: 6px;
 
@@ -114,30 +67,48 @@ Code 2 with Pin:
       overflow: visible;
     }
 
-
+    /* push pin */
     .pin {
+
       position: absolute;
-      top: -15px;   /* FIXED */
+
+      top: -15px;
       left: 50%;
-      transform: translateX(-50%) rotate(8deg);
+
+      transform:
+        translateX(-50%)
+        rotate(8deg);
 
       width: 55px;
 
-      filter: drop-shadow(0 8px 6px rgba(0,0,0,0.6));
+      filter:
+        drop-shadow(
+          0 8px 6px rgba(0,0,0,0.6)
+        );
+
       z-index: 10;
     }
 
     .heading {
+
       font-size: 32px;
       font-weight: bold;
+
       margin-bottom: 20px;
+
+      color: #111;
     }
 
     .text {
+
       font-size: 28px;
       line-height: 1.6;
+
       color: #111;
+
       word-break: break-word;
+
+      letter-spacing: 0.5px;
     }
 
   </style>
@@ -145,43 +116,130 @@ Code 2 with Pin:
 
 <body>
 
-<div class="note">
-  <img src="https://raw.githubusercontent.com/gglimagesbulk-ai/Note/ae491431c8475e37dbda1e46cc62eda212ae52c0/pin.png" class="pin">
+  <div class="note">
 
-  <!-- ✅ HEADING BACK -->
-  <div class="heading">Prediction:</div>
+    <!-- push pin -->
+    <img
+      src="https://raw.githubusercontent.com/gglimagesbulk-ai/Note/ae491431c8475e37dbda1e46cc62eda212ae52c0/pin.png"
+      class="pin"
+    >
 
-  <div class="text" id="noteText">Loading...</div>
-</div>
+    <!-- fixed heading -->
+    <div class="heading">
+      Prediction:
+    </div>
+
+    <!-- prediction text -->
+    <div class="text" id="noteText"></div>
+
+  </div>
 
 <script>
-  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0uRjvRTbPwGV8YUnru5eUYwjUm3v_lr8ixipRmabNOHjFI4Qs47YFFtoXZ_Qk1qc61IbUt7JhjNBD/pub?output=tsv";
+
+  /*
+    IMPORTANT:
+
+    Use ONLY COLUMN A in Google Sheets.
+
+    BEST METHOD:
+    Put your ENTIRE prediction
+    inside cell A1 with line breaks.
+
+    Example in A1:
+
+    France
+
+    You will choose this country.
+  */
+
+  const sheetUrl =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0uRjvRTbPwGV8YUnru5eUYwjUm3v_lr8ixipRmabNOHjFI4Qs47YFFtoXZ_Qk1qc61IbUt7JhjNBD/pub?output=tsv";
+
+
 
   function handwritingEffect(text) {
-    return text.split("").map(char => {
 
-      // ✅ FIX: PRESERVE SPACES
-      if (char === " ") return " ";
+    return text
+      .split("")
+      .map(char => {
 
-      const rot = (Math.random() * 4 - 2);
-      const y = Math.random() * 2;
+        // preserve spaces
+        if (char === " ")
+          return " ";
 
-      return `<span style="display:inline-block; margin-right:1px; transform:rotate(${rot}deg) translateY(${y}px)">${char}</span>`;
-    }).join("");
+        // preserve line breaks
+        if (char === "\n")
+          return "<br>";
+
+        // random handwriting feel
+        const rot =
+          (Math.random() * 4 - 2);
+
+        const y =
+          Math.random() * 2;
+
+        return `
+          <span
+            style="
+              display:inline-block;
+              margin-right:1px;
+              transform:
+                rotate(${rot}deg)
+                translateY(${y}px);
+            "
+          >
+            ${char}
+          </span>
+        `;
+
+      })
+      .join("");
   }
 
-  fetch(sheetUrl)
-    .then(res => res.text())
-    .then(data => {
-      const rows = data.trim().split("\n").map(r => r.split("\t"));
-      const prediction = rows[rows.length - 1][0];
 
-      document.getElementById("noteText").innerHTML = handwritingEffect(prediction);
-    })
-    .catch(err => {
-      console.error(err);
-      document.getElementById("noteText").innerText = "Failed to load";
-    });
+
+  // fetch latest sheet data
+  fetch(
+    sheetUrl +
+    "&t=" +
+    new Date().getTime()
+  )
+
+  .then(res => res.text())
+
+  .then(data => {
+
+    // rows
+    const rows =
+      data
+        .trim()
+        .split("\n")
+        .map(r => r.split("\t"));
+
+    /*
+      USE ONLY A1
+    */
+    const prediction =
+      rows[0][0]
+        .replace(/\\n/g, "\n");
+
+    // display
+    document.getElementById("noteText")
+      .innerHTML =
+        handwritingEffect(prediction);
+
+  })
+
+  .catch(err => {
+
+    console.error(err);
+
+    document.getElementById("noteText")
+      .innerText =
+        "Failed to load";
+
+  });
+
 </script>
 
 </body>
