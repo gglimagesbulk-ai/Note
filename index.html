@@ -107,7 +107,10 @@
     .then(res => res.text())
     .then(data => {
       const rows = data.trim().split("\n").map(r => r.split("\t"));
-      const prediction = rows[0][0].replace(/\\n/g, "\n");
+      const prediction = rows
+    .map(r => r[0])
+    .filter(Boolean)
+    .join("\n");
 
       document.getElementById("noteText").innerHTML = handwritingEffect(prediction);
     })
