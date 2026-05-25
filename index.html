@@ -83,7 +83,7 @@
   <!-- ✅ HEADING BACK -->
   <div class="heading">Prediction:</div>
 
-  <div class="text" id="noteText">Loading...</div>
+  <div class="text" id="noteText"></div>
 </div>
 
 <script>
@@ -107,7 +107,7 @@
     .then(res => res.text())
     .then(data => {
       const rows = data.trim().split("\n").map(r => r.split("\t"));
-      const prediction = rows[0][0];
+      const prediction = rows[0][0].replace(/\\n/g, "\n");
 
       document.getElementById("noteText").innerHTML = handwritingEffect(prediction);
     })
