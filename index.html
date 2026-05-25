@@ -87,8 +87,8 @@
 </div>
 
 <script>
-  const sheetUrl =
-"https://docs.google.com/spreadsheets/d/1iKurhXy0H58z0MKlAVj_IZF_bwkGaWzDZU6rxjxnAeI/gviz/tq?tqx=out:json&t=" + new Date().getTime();
+  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0uRjvRTbPwGV8YUnru5eUYwjUm3v_lr8ixipRmabNOHjFI4Qs47YFFtoXZ_Qk1qc61IbUt7JhjNBD/pub?output=tsv";
+
   function handwritingEffect(text) {
     return text.split("").map(char => {
 
@@ -103,32 +103,17 @@
   }
 
   fetch(sheetUrl)
-  .then(res => res.text())
-  .then(data => {
+    .then(res => res.text())
+    .then(data => {
+      const rows = data.trim().split("\n").map(r => r.split("\t"));
+      const prediction = rows[rows.length - 1][0];
 
-    // CLEAN GOOGLE RESPONSE SAFELY
-    const jsonText = data.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/)[1];
-
-    const json = JSON.parse(jsonText);
-
-    // GET LAST ROW FIRST COLUMN
-    const rows = json.table.rows;
-
-    const prediction = rows[rows.length - 1].c[0].v;
-
-    const note = document.getElementById("noteText");
-
-    note.innerHTML = handwritingEffect(prediction);
-
-    setTimeout(() => {
-      note.style.opacity = 1;
-      document.querySelector(".note").style.opacity = 1;
-    }, 100);
-
-  })
-  .catch(err => {
-    console.error(err);
-  });
+      document.getElementById("noteText").innerHTML = handwritingEffect(prediction);
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById("noteText").innerText = "Failed to load";
+    });
 </script>
 
 </body>
