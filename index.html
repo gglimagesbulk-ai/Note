@@ -18,15 +18,18 @@
       align-items: center;
     }
 
+    /* vignette effect */
     body::after {
       content: "";
       position: fixed;
       inset: 0;
       background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.7));
+      pointer-events: none;
     }
 
     .note {
       position: relative;
+
       width: 90vw;
       max-width: 420px;
       min-height: 320px;
@@ -46,10 +49,9 @@
       overflow: visible;
     }
 
-
     .pin {
       position: absolute;
-      top: -15px;   /* FIXED */
+      top: -15px;
       left: 50%;
       transform: translateX(-50%) rotate(8deg);
 
@@ -63,6 +65,7 @@
       font-size: 32px;
       font-weight: bold;
       margin-bottom: 20px;
+      color: #111;
     }
 
     .text {
@@ -70,50 +73,98 @@
       line-height: 1.6;
       color: #111;
       word-break: break-word;
+      letter-spacing: 0.5px;
     }
-
   </style>
 </head>
 
 <body>
 
 <div class="note">
-  <img src="https://raw.githubusercontent.com/gglimagesbulk-ai/Note/ae491431c8475e37dbda1e46cc62eda212ae52c0/pin.png" class="pin">
 
-  <!-- ✅ HEADING BACK -->
+  <img 
+    src="https://raw.githubusercontent.com/gglimagesbulk-ai/Note/ae491431c8475e37dbda1e46cc62eda212ae52c0/pin.png"
+    class="pin"
+  >
+
   <div class="heading">Prediction:</div>
 
   <div class="text" id="noteText">Loading...</div>
+
 </div>
 
 <script>
-  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0uRjvRTbPwGV8YUnru5eUYwjUm3v_lr8ixipRmabNOHjFI4Qs47YFFtoXZ_Qk1qc61IbUt7JhjNBD/pub?output=tsv";
+
+  /*
+    GOOGLE DOCS LINK FORMAT:
+
+    1. Open Google Doc
+    2. File → Share → Publish to web
+    3. Copy publish link
+    4. Add ?output=txt
+
+    Example:
+    https://docs.google.com/document/d/e/XXXX/pub?output=txt
+	https://docs.google.com/document/d/1DFtL2TLZ7FrevGXk-kf5WSNX3o4-1JPkTG1_n46nIzU/edit?usp=sharing
+  */
+
+  const docUrl =
+    "https://docs.google.com/document/d/e/2PACX-1vS1cjowXo0QGdcYaQPsVYGVY1AhBJvZNOj6dvfgVoLfKb_kDvGOY660U1WnrKDnGLLWkPhBLsL3V9lU/pub?output=txt";
+
+
 
   function handwritingEffect(text) {
+
     return text.split("").map(char => {
 
-      // ✅ FIX: PRESERVE SPACES
+      // preserve spaces
       if (char === " ") return " ";
+
+      // preserve line breaks
+      if (char === "\n") return "<br>";
 
       const rot = (Math.random() * 4 - 2);
       const y = Math.random() * 2;
 
-      return `<span style="display:inline-block; margin-right:1px; transform:rotate(${rot}deg) translateY(${y}px)">${char}</span>`;
+      return `
+        <span
+          style="
+            display:inline-block;
+            margin-right:1px;
+            transform:
+              rotate(${rot}deg)
+              translateY(${y}px);
+          "
+        >
+          ${char}
+        </span>
+      `;
+
     }).join("");
   }
 
-  fetch(sheetUrl)
-    .then(res => res.text())
-    .then(data => {
-      const rows = data.trim().split("\n").map(r => r.split("\t"));
-      const prediction = rows[rows.length - 1][0];
 
-      document.getElementById("noteText").innerHTML = handwritingEffect(prediction);
+
+  fetch(docUrl)
+    .then(res => res.text())
+    .then(text => {
+
+      // remove extra empty spaces
+      const prediction = text.trim();
+
+      document.getElementById("noteText").innerHTML =
+        handwritingEffect(prediction);
+
     })
     .catch(err => {
+
       console.error(err);
-      document.getElementById("noteText").innerText = "Failed to load";
+
+      document.getElementById("noteText").innerText =
+        "Failed to load";
+
     });
+
 </script>
 
 </body>
